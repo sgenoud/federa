@@ -1,0 +1,52 @@
+{
+    "common": {
+        "aws_region": "eu-west-1",
+        "profile_name": "federa",
+        "project_name": "federa-api",
+        "runtime": "python3.6",
+        "s3_bucket": "zappa-ktf4voji9"
+
+        "payload_compression": true,
+        "payload_minimum_compression_size": 1024,
+
+        "route53_enabled": false,
+        "certificate_arn": "arn:aws:acm:us-east-1:846687320916:certificate/58d52420-99e0-4cda-86f8-68a671fd9ea9"
+    },
+
+    "api": {
+        "extends": "common",
+        "app_function": "api.app"
+    }
+
+    "group": {
+        "extends": "common",
+        "app_function": "group.app"
+    }
+
+    "dev_api": {
+        "extends": "api",
+        "aws_environment_variables": {
+            "SERVER_NAME": "dev-api.federa.site",
+            "TABLE_PREFIX": "dev"
+        },
+        "domain": "dev-api.federa.site"
+    }, 
+
+    "dev_group": {
+        "extends": "group",
+        "aws_environment_variables": {
+            "SERVER_NAME": "dev-group.federa.site",
+            "TABLE_PREFIX": "dev"
+        },
+        "domain": "dev-group.federa.site"
+    }, 
+
+
+    "prod_api": {
+        "extends": "api",
+        "aws_environment_variables": {
+            "SERVER_NAME": "api.federa.site"
+        },
+        "domain": "api.federa.site"
+    }
+}
