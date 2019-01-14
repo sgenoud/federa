@@ -72,3 +72,5 @@ class GroupActivity(db.Model):
     group_id = Column(String)
     type = Column(String)
     object = Column(String)
+
+    by_group = GlobalSecondaryIndex(projection="all", hash_key="group_id")

@@ -27,6 +27,11 @@ def group_members(group_id):
     return [member.follower_id for member in q.all()]
 
 
+def group_activity(group_id):
+    q = db.engine.query(GroupActivity.by_group, key=GroupActivity.group_id == group_id)
+    return [json.loads(activity.object) for activity in q.all()]
+
+
 def serialize_announce(announce):
     return {
         "id": url_for(".announce_activity", announce_id=announce.id, _external=True),
@@ -212,4 +217,19 @@ def group_info(group_name):
 
     return jsonify(
         {"group_name": group.id, "name": group.name, "summary": group.summary, "members": members}
+    )
+
+
+@groupAPI.route("/group/<group_name>/activity", methods=("GET",))
+@check_logged_in
+def group_info_activity(group_name):
+    group = find_group(group_name)
+
+    if group is None:
+        abort(404)
+
+    activity = group_activity(group.id)
+
+    return jsonify(
+        {"group_name": group.id, "name": group.name, "summary": group.summary, "activity": activity}
     )
