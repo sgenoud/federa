@@ -84,6 +84,8 @@ class ActorBlueprint(Blueprint):
         if self.manager.supports_list("outbox"):
             out["outbox"] = url_for(".outbox", actor_id=actor_id, _external=True)
 
+        print(out)
+
         return Response(
             response=json.dumps(out),
             headers={"Content-Type": "application/jrd+json; charset=utf-8"},

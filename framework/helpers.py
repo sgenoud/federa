@@ -1,10 +1,15 @@
 from functools import wraps
 from urllib.parse import urlparse
 import json
+import re
 
 from flask import request, abort, Response
 
 from framework.signatures import parse_signature_header
+
+
+# from https://github.com/dsblank/activitypub/blob/master/activitypub/manager/ap_routes.py
+WEBFINGER = re.compile(r"@?(?:acct:)?(?P<username>[\w.!#$%&\'*+-/=?^_`{|}~]+)@(?P<host>[\w.:-]+)")
 
 
 def activity_actor_from_source(f):

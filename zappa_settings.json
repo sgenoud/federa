@@ -49,4 +49,14 @@
         },
         "domain": "api.federa.site"
     }
+
+    "observer": {
+        "extends": "common",
+        "app_function": "observer.app"
+        "aws_environment_variables": {
+            "SERVER_NAME": "observer.federa.site",
+            "TABLE_PREFIX": "dev"
+        },
+        "domain": "observer.federa.site"
+    } 
 }

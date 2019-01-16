@@ -1,10 +1,7 @@
 import json
-import re
 
 from flask import url_for, request, Blueprint, abort, current_app, Response
-
-# from https://github.com/dsblank/activitypub/blob/master/activitypub/manager/ap_routes.py
-WEBFINGER = re.compile(r"(?:acct:)?(?P<username>[\w.!#$%&\'*+-/=?^_`{|}~]+)@(?P<host>[\w.:-]+)")
+from framework.helpers import WEBFINGER
 
 
 class WebfingerBlueprint(Blueprint):
@@ -55,7 +52,6 @@ class WebfingerBlueprint(Blueprint):
         actor = None
         for manager in self._managers:
             actor = manager.find(matches["username"])
-            print(actor)
             if actor is not None:
                 break
 
