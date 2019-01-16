@@ -1,45 +1,18 @@
 from uuid import uuid4
 import json
 
-from flask import Blueprint, request, abort, jsonify, url_for
+from flask import abort, url_for
 from bloop.exceptions import ConstraintViolation
 
 from framework.actor_manager import ActorManager
 from framework.actor_actions import accept_object, announce_object
 from framework.helpers import activity_actor_from_source, activityjsonify
 
-from federa.api.utils import check_logged_in
 from federa.key_store import key_store
-from federa.model import Group, GroupMember, GroupActivity
 from federa.db import db
 
-
-def find_group(group_id):
-    q = db.engine.query(Group, key=Group.id == group_id)
-    try:
-        return q.one()
-    except ConstraintViolation:
-        return None
-
-
-def group_members(group_id):
-    q = db.engine.query(GroupMember.by_group, key=GroupMember.group_id == group_id)
-    return [member.follower_id for member in q.all()]
-
-
-def group_activity(group_id):
-    q = db.engine.query(GroupActivity.by_group, key=GroupActivity.group_id == group_id)
-    return [json.loads(activity.object) for activity in q.all()]
-
-
-def serialize_announce(announce):
-    return {
-        "id": url_for(".announce_activity", announce_id=announce.id, _external=True),
-        "type": announce.type,
-        "actor": url_for(".actor", actor_id=announce.group_id, _external=True),
-        "object": json.loads(announce.object),
-    }
-
+from .common import find_group, group_members, serialize_announce
+from .model import GroupMember, GroupActivity
 
 group = ActorManager("group", find_group, external_key_store=key_store)
 
@@ -176,60 +149,3 @@ def announce_activity(announce_id):
         abort(404)
 
     return activityjsonify(serialize_announce(announce), add_context=True)
-
-
-groupAPI = Blueprint("group-api", __name__)
-
-
-@groupAPI.route("/group", methods=("POST",))
-@check_logged_in
-def make_group():
-    if not request.json or "group_name" not in request.json:
-        abort(400, "Needs group_name")
-
-    group_name = request.json["group_name"]
-    name = request.json.get("name", group_name)
-    summary = request.json.get("summary", "")
-
-    if len(group_name) > 128:
-        abort(400, "group_name too long")
-    if len(name) > 256:
-        abort(400, "group_name too long")
-    if len(summary) > 2560:
-        abort(400, "summary too long")
-
-    if find_group(group_name) is not None:
-        abort(403)
-
-    db.engine.save(Group(id=group_name, name=name, summary=summary))
-
-    return jsonify({"ok": True})
-
-
-@groupAPI.route("/group/<group_name>", methods=("GET",))
-def group_info(group_name):
-    group = find_group(group_name)
-
-    if group is None:
-        abort(404)
-
-    members = group_members(group.id)
-
-    return jsonify(
-        {"group_name": group.id, "name": group.name, "summary": group.summary, "members": members}
-    )
-
-
-@groupAPI.route("/group/<group_name>/activity", methods=("GET",))
-@check_logged_in
-def group_info_activity(group_name):
-    group = find_group(group_name)
-
-    if group is None:
-        abort(404)
-
-    activity = group_activity(group.id)
-
-    return jsonify(
-        {"group_name": group.id, "name": group.name, "summary": group.summary, "activity": activity}
-    )

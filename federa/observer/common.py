@@ -1,18 +1,10 @@
 from collections import namedtuple
 import json
 
-from flask import Blueprint, request, jsonify, abort
-
-from framework.actor_manager import ActorManager
-from framework.actor_actions import accept_object, request_follow, request_unfollow
-from framework.helpers import activity_actor_from_source
 from framework.crypto_utils import deserialize, extract_public_key
-from framework.client import retrieve_actor
 
-from federa.key_store import key_store
-from federa.model import ObservedActivity
 from federa.db import db
-
+from .model import ObservedActivity
 
 key = deserialize(
     """
@@ -75,62 +67,3 @@ def activities(observer_id):
         }
         for activity in q.all()
     ]
-
-
-observer = ActorManager("observer", find_observer, external_key_store=key_store)
-
-
-def save_activity(observer, activity):
-    db.engine.save(
-        ObservedActivity(
-            observer=observer.id,
-            type=activity.get("type"),
-            source_host=request.headers.get("host"),
-            object=json.dumps(activity),
-        )
-    )
-    return "done"
-
-
-@observer.register_default_activity
-def follow_default(observer, activity):
-    save_activity(observer, activity)
-
-
-@observer.register_activity("Follow")
-@activity_actor_from_source
-def follow(observer, follow_activity):
-    save_activity(observer, follow_activity)
-    follower = follow_activity.get("actor")
-    accept_object(observer, follower, follow_activity)
-    return "done"
-
-
-observerAPI = Blueprint("observer-api", __name__)
-
-
-@observerAPI.route("/observer/<observer_name>", methods=("GET",))
-def group_info(observer_name):
-    return jsonify({"observer": observer_name, "activity": activities(observer_name)})
-
-
-@observerAPI.route("/observer/<observer_name>/follow", methods=("POST",))
-def follow_actor(observer_name):
-    target_actor = retrieve_actor(request.form.get("target"))
-
-    if target_actor is None or "inbox" not in target_actor:
-        abort(404)
-
-    request_follow(find_observer(observer_name), target_actor["id"], bp_name="observer")
-    return ("done", 202)
-
-
-@observerAPI.route("/observer/<observer_name>/unfollow", methods=("POST",))
-def unfollow_actor(observer_name):
-    target_actor = retrieve_actor(request.form.get("target"))
-
-    if target_actor is None or "inbox" not in target_actor:
-        abort(404)
-
-    request_unfollow(find_observer(observer_name), target_actor["id"], bp_name="observer")
-    return ("done", 202)

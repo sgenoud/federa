@@ -1,3 +1,3 @@
-from federa.actors.observer import create_app
+from federa.observer.app import create_app
 
 app = create_app()

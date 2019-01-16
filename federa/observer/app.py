@@ -5,8 +5,10 @@ from flask_cors import CORS
 from framework.api.webfinger import make_webfinger_blueprint
 
 from federa.config import Configuration
-from federa.group import group
 from federa.db import db
+
+from .api import observerAPI
+from .actor import observer
 
 
 def create_app():
@@ -19,9 +21,10 @@ def create_app():
     CORS(app, supports_credentials=True)
 
     webfingerAPI = make_webfinger_blueprint()
-    app.register_blueprint(group.blueprint, url_prefix="/")
-    webfingerAPI.register_actor(group)
+    app.register_blueprint(observer.blueprint, url_prefix="/")
+    webfingerAPI.register_actor(observer)
 
     app.register_blueprint(webfingerAPI, url_prefix="/.well-known")
+    app.register_blueprint(observerAPI, url_prefix="/api")
 
     return app
