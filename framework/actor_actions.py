@@ -13,7 +13,7 @@ def random_id():
 
 def detailed_post_to_inbox(actor_key, key_id, actor_recieving, data):
     try:
-        res = signed_request(
+        return signed_request(
             actor_key,
             key_id,
             "post",
@@ -27,7 +27,7 @@ def detailed_post_to_inbox(actor_key, key_id, actor_recieving, data):
 
 def post_to_inbox(actor_sending, actor_recieving, data, bp_name=""):
     try:
-        detailed_post_to_inbox(
+        return detailed_post_to_inbox(
             actor_sending.private_key,
             url_for(
                 f"{bp_name}.actor", actor_id=actor_sending.id, _external=True, _anchor="main-key"

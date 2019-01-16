@@ -2,7 +2,7 @@ from datetime import datetime, timezone
 
 from bloop import Column, DateTime, String
 
-from federa.db import db
+from server.db import db
 
 
 class ObservedActivity(db.Model):

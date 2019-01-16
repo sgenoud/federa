@@ -1,7 +1,7 @@
 from flask import Blueprint, request, abort, jsonify
 
-from federa.api.utils import check_logged_in
-from federa.db import db
+from server.api.utils import check_logged_in
+from server.db import db
 
 from .model import Group
 from .common import find_group, group_members, group_activity

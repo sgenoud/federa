@@ -1,7 +1,7 @@
 from bloop.exceptions import MissingObjects
 
-from federa.db import db
-from federa.model import OAuthKeys
+from server.db import db
+from server.model import OAuthKeys
 
 
 class OAuthDynamoDbMemoryBackend:

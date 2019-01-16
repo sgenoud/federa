@@ -1,8 +1,8 @@
 from bloop import Boolean, Column, GlobalSecondaryIndex, String, UUID
 
 from framework.crypto_utils import new_key, extract_public_key
-from federa.db import db
-from federa.model import RSAKey
+from server.db import db
+from server.model import RSAKey
 
 
 class Group(db.Model):

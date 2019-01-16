@@ -1,6 +1,6 @@
 import json
 
-from federa.db import db
+from server.db import db
 from .model import Group, GroupMember, GroupActivity
 
 from flask import url_for

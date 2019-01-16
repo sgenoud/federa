@@ -7,10 +7,10 @@ from flask_cors import CORS
 
 from framework.api.oauth import make_mastodon_blueprint, mastodon
 
-from federa.config import Configuration
-from federa.group import groupAPI
-from federa.db import db
-from federa.backends import OAuthDynamoDbMemoryBackend
+from server.config import Configuration
+from server.group import groupAPI
+from server.db import db
+from server.backends import OAuthDynamoDbMemoryBackend
 
 
 def create_app():

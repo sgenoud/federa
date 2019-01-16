@@ -3,7 +3,7 @@ from datetime import datetime, timezone
 from bloop import Binary, Column, DateTime, String
 
 from framework.crypto_utils import serialize, deserialize
-from federa.db import db
+from server.db import db
 
 
 class RSAKey(Binary):

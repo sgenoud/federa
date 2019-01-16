@@ -4,8 +4,8 @@ from flask_cors import CORS
 
 from framework.api.webfinger import make_webfinger_blueprint
 
-from federa.config import Configuration
-from federa.db import db
+from server.config import Configuration
+from server.db import db
 
 from .actor import group
 

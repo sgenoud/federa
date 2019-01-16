@@ -3,7 +3,7 @@ import json
 
 from framework.crypto_utils import deserialize, extract_public_key
 
-from federa.db import db
+from server.db import db
 from .model import ObservedActivity
 
 key = deserialize(

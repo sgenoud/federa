@@ -1,8 +1,8 @@
 from bloop.session import key_schema, index_projection, attribute_definitions
 
-from federa.config import Configuration
-from federa.db import db
-from federa.model import GroupActivity
+from server.config import Configuration
+from server.db import db
+from server.model import GroupActivity
 
 
 def run():

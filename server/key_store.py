@@ -6,8 +6,8 @@ import requests
 from cryptography.hazmat.primitives.serialization import load_pem_public_key
 from cryptography.hazmat.backends import default_backend
 
-from federa.model import PublicKey
-from federa.db import db
+from server.model import PublicKey
+from server.db import db
 
 
 class KeyStore:

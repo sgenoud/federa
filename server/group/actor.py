@@ -8,8 +8,8 @@ from framework.actor_manager import ActorManager
 from framework.actor_actions import accept_object, announce_object
 from framework.helpers import activity_actor_from_source, activityjsonify
 
-from federa.key_store import key_store
-from federa.db import db
+from server.key_store import key_store
+from server.db import db
 
 from .common import find_group, group_members, serialize_announce
 from .model import GroupMember, GroupActivity

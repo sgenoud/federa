@@ -6,8 +6,8 @@ from framework.actor_manager import ActorManager
 from framework.actor_actions import accept_object
 from framework.helpers import activity_actor_from_source
 
-from federa.db import db
-from federa.key_store import key_store
+from server.db import db
+from server.key_store import key_store
 
 from .model import ObservedActivity
 from .common import find_observer
