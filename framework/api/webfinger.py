@@ -1,7 +1,7 @@
 import json
 
 from flask import url_for, request, Blueprint, abort, current_app, Response
-from framework.helpers import WEBFINGER
+from framework.constants import WEBFINGER
 
 
 class WebfingerBlueprint(Blueprint):

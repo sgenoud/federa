@@ -38,16 +38,47 @@
             "SERVER_NAME": "dev-group.federa.site",
             "TABLE_PREFIX": "dev"
         },
-        "domain": "dev-group.federa.site"
+        "domain": "dev-group.federa.site",
+         "events": [
+           {
+               "function": "server.group.notifications.group_updated",
+               "event_source": {
+                    "arn":  "arn:aws:dynamodb:eu-west-1:846687320916:table/devGroup/stream/2019-01-21T17:06:42.812",
+                    "starting_position": "LATEST",
+                    "batch_size": 50, 
+                    "enabled": true 
+               }
+           }
+       ]
     }, 
 
 
-    "prod_api": {
+    "prod": {
         "extends": "api",
         "aws_environment_variables": {
-            "SERVER_NAME": "api.federa.site"
+            "SERVER_NAME": "federa.site"
         },
-        "domain": "api.federa.site"
+        "domain": "federa.site"
+    },
+
+
+    "prod_group": {
+        "extends": "group",
+        "aws_environment_variables": {
+            "SERVER_NAME": "group.federa.site"
+        },
+        "domain": "group.federa.site",
+        "events": [
+           {
+               "function": "server.group.notifications.group_updated",
+               "event_source": {
+                    "arn":  "arn:aws:dynamodb:eu-west-1:846687320916:table/Group/stream/2019-01-21T19:21:03.036",
+                    "starting_position": "LATEST",
+                    "batch_size": 50, 
+                    "enabled": true 
+               }
+           }
+       ]
     }
 
     "observer": {

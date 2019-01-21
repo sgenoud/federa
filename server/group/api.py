@@ -1,10 +1,8 @@
 from flask import Blueprint, request, abort, jsonify
 
 from server.api.utils import check_logged_in
-from server.db import db
 
-from .model import Group
-from .common import find_group, group_members, group_activity
+from .common import find_group, group_members, group_activity, save_group
 
 groupAPI = Blueprint("group-api", __name__)
 
@@ -19,17 +17,7 @@ def make_group():
     name = request.json.get("name", group_name)
     summary = request.json.get("summary", "")
 
-    if len(group_name) > 128:
-        abort(400, "group_name too long")
-    if len(name) > 256:
-        abort(400, "group_name too long")
-    if len(summary) > 2560:
-        abort(400, "summary too long")
-
-    if find_group(group_name) is not None:
-        abort(403)
-
-    db.engine.save(Group(id=group_name, name=name, summary=summary))
+    save_group(group_name, name, summary)
 
     return jsonify({"ok": True})
 

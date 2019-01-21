@@ -1,4 +1,4 @@
-from .signatures import signature_is_valid, signed_request
+from .signatures import signature_is_valid
 from .crypto_utils import deserialize
 
 

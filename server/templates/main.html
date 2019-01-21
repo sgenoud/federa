@@ -1,0 +1,48 @@
+{% extends "layout.html" %}
+
+{% block additional_style %}
+<style>
+.group-info {
+    display: flex;
+    flex-wrap: wrap;
+    margin-bottom: 1em;
+}
+
+.group-info .group-handle{
+    margin-right: 0.3em;
+    font-weight: 500;
+}
+
+.group-info .group-summary{
+    padding-top: 0.2em;
+    padding-left: 1em;
+    width: 100%;
+}
+</style>
+{% endblock %}
+
+{% block body %}
+
+<p>Welcome <b>{{session.actor_handle}}</b>!</p>
+
+<p>This service allows you to create groups (or communities, forums) 
+for the fediverse. Messages adressed to the group will appear in the timeline
+of all its members – but you need to be a member of a group to post in it. 
+</p>
+
+
+{% if groups %}
+<p>Here is the list of the groups you are a member of:</p>
+
+{% for (group, member) in groups %}
+<div class="group-info">
+    <a class="group-handle" href="{{url_for('group-views.group_info', group_id=group.id)}}">@{{group.id}}</a>
+    <span class="group-name">{{group.name}}</span>
+    <div class="group-summary">
+    {{group.summary}}
+    </div>
+</div>
+{% endfor %}
+{% endif %}
+
+{% endblock %}

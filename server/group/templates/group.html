@@ -1,0 +1,58 @@
+{% extends "layout.html" %}
+{% block title %}Welcome{% endblock %}
+
+{% block body %}
+
+{% block additional_style %}
+<style>
+.group-info {
+    display: flex;
+    flex-wrap: wrap;
+    margin-bottom: 1em;
+}
+
+.group-info .group-handle {
+    margin-right: 0.3em;
+    font-weight: 500;
+    font-size: 1.5em;
+}
+
+.group-info .group-name {
+    font-size: 1.5em;
+    font-weight: 200;
+}
+
+.group-info .group-summary{
+    padding-top: 1em;
+    width: 100%;
+}
+</style>
+{% endblock %}
+
+
+{% if is_admin %}
+<div class="button-row">
+    <a href="{{url_for('.group_edit', group_id=group.id)}}" class="action-button">
+    Edit
+</a>
+</div>
+{% endif %}
+
+
+<div class="group-info">
+    <span class="group-handle" href="{{url_for('group-views.group_info', group_id=group.id)}}">@{{group.id}}</span>
+    <span class="group-name">{{group.name}}</span>
+    <div class="group-summary">
+    {{group.summary}}
+    </div>
+</div>
+
+
+<ul>
+{% for member in members %}
+<li><a href="{{member}}">{{member}}</a></li>
+{% endfor %}
+</ul>
+
+
+{% endblock %}

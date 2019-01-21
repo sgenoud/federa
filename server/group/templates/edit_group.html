@@ -1,0 +1,63 @@
+{% extends "layout.html" %}
+{% block title %}Group{% endblock %}
+
+{% block additional_style %}
+<style>
+
+.group-form {
+    display: flex;
+    flex-direction: column;
+    min-width: 300px;
+}
+
+.form-elem {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 0.5em;
+}
+
+.form-elem label {
+    font-size: 0.8em;
+    font-variant: all-petite-caps;
+}
+
+.form-elem .additional-info {
+    font-size: 0.6em;
+}
+
+
+</style>
+{% endblock %}
+
+
+{% block body %}
+<form class="group-form" method="post" action="{{url_for('.save', next=next)}}">
+    <div class="form-elem">
+        <label for="group-id">Handle</label>
+        <span class="additional-info">letters and numbers only</span>
+        <input
+            id="group-id" 
+            name="id" 
+            value="{{group.id}}" 
+            pattern="[A-Za-z0-9]+"
+            maxlength=100
+            {{"readonly" if group.id else ""}}  />
+    </div>
+    <div class="form-elem">
+        <label for="group-name">Name</label>
+        <input id="group-name" name="name" value="{{group.name}}" maxlength=250 />
+    </div>
+    <div class="form-elem">
+        <label for="group-summary">Summary</label>
+        <textarea id="group-summary" name="summary">
+{{group.summary}}
+</textarea>
+    </div>
+
+    <div class="button-row">
+        <button class="action-button">Save</button>
+    </div>
+
+</form>
+
+{% endblock %}

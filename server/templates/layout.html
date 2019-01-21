@@ -1,0 +1,113 @@
+<!doctype html>
+{% block head %}
+<title>{% block title %}Welcome{% endblock %} | Federa (Tools for the fediverse)</title>
+<meta charset=utf-8>
+<link rel=stylesheet type=text/css href="{{ url_for('static', filename='style.css') }}">
+<link rel=stylesheet type=text/css href="https://unpkg.com/normalize.css@8.0.1/normalize.css">
+<link rel=stylesheet type=text/css href="https://unpkg.com/system-font-css@2.0.2/system-font.css">
+<link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+
+<style>
+* {
+    box-sizing: border-box;
+}
+body {
+    font-family: system-ui;
+    font-size: 16px;
+    color: #444;
+}
+.wrapper {
+    display: flex;
+    justify-content: center;
+    min-height: calc(100vh);
+}
+main {
+    padding:  3em;
+    max-width: 600px;
+    background-color: white;
+    fill: white;
+    margin-top: 3em;
+}
+
+nav {
+    padding: 0 4em 0 4em;
+    display: flex;
+    justify-content: flex-end;
+    position: fixed;
+    width: 100vw;
+    max-width: 100%;
+    background-color: #6b1338;
+    background-image: linear-gradient(315deg, #6b1338 0%, #b9133c 74%);
+    color: white;
+    fill: white;
+    height: 3em;
+    line-height: 3em;
+    box-shadow: 0px 8px 19px -15px rgba(0,0,0,0.75);
+}
+nav .title {
+    font-size: 1.5em;
+    color: white;
+}
+
+a {
+    text-decoration: none;
+    color: #6b1338;
+}
+
+input, textarea {
+	padding: 0.3em 0.6em;
+    border: 1px solid lightgrey;
+}
+
+.form-elem input[readonly] {
+    border-style: none;
+}
+
+.button-row {
+    display: flex;
+    justify-content: flex-end;
+}
+
+
+button, input[type="submit"], input[type="reset"] {
+	background: none;
+	color: inherit;
+	border: 1px solid #444;
+	padding: 0.3em 0.6em;
+	font: inherit;
+	cursor: pointer;
+	outline: inherit;
+}
+
+button.action-button {
+    background-color: #6b1338;
+    color: white;
+}
+
+</style>
+{% block additional_style %}{% endblock %}
+
+<script type=text/javascript
+  src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
+{% endblock %}
+
+<body>
+        <header>
+            <nav>
+                <a href="/" class="title">
+                    Federa
+                </a>
+                <a href="/" class="title">
+                {% include "icon.html" %}
+                </a>
+            </nav>
+            {% for message in get_flashed_messages() %}
+            <p class=message>{{ message }}
+            {% endfor %}
+        </header>
+    <div class="wrapper">
+        <main>
+            {% block body %}{% endblock %}
+        </main>
+    </div >
+</body>

@@ -31,6 +31,8 @@ def follow(group, follow_activity):
     if target != url_for(".actor", actor_id=group.id, _external=True):
         abort(400, "Wrong target")
 
+    accept_object(group, follower, follow_activity)
+
     q = db.engine.query(
         GroupMember.by_follower,
         key=GroupMember.follower_id == follower,
@@ -41,8 +43,6 @@ def follow(group, follow_activity):
         return "done"
 
     db.engine.save(GroupMember(id=uuid4(), follower_id=follower, group_id=group.id))
-    accept_object(group, follower, follow_activity)
-
     return "done"
 
 

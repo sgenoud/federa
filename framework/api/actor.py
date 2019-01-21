@@ -8,6 +8,7 @@ from email.utils import parsedate_to_datetime
 
 from framework.signatures import signature_is_valid
 from framework.helpers import activityjsonify
+from framework.constants import AP_CONTEXT
 
 
 class ActorBlueprint(Blueprint):
@@ -57,18 +58,21 @@ class ActorBlueprint(Blueprint):
 
         self.manager = actor_manager
 
-    def actor(self, actor_id):
-        actor = self.manager.find(actor_id)
+    def format_actor_info(self, actor):
+        actor_id = actor.id
+
         out = {
-            "@context": ["https://www.w3.org/ns/activitystreams", "https://w3id.org/security/v1"],
-            "id": url_for(".actor", actor_id=actor_id, _external=True),
-            "inbox": url_for(".inbox", actor_id=actor_id, _external=True),
+            "@context": [AP_CONTEXT, "https://w3id.org/security/v1"],
+            "id": url_for(f"{self.name}.actor", actor_id=actor_id, _external=True),
+            "inbox": url_for(f"{self.name}.inbox", actor_id=actor_id, _external=True),
             "type": actor.type,
             "preferredUsername": actor.id,
             "name": actor.name,
             "publicKey": {
-                "id": url_for(".actor", actor_id=actor_id, _external=True, _anchor="main-key"),
-                "owner": url_for(".actor", actor_id=actor_id, _external=True),
+                "id": url_for(
+                    f"{self.name}.actor", actor_id=actor_id, _external=True, _anchor="main-key"
+                ),
+                "owner": url_for(f"{self.name}.actor", actor_id=actor_id, _external=True),
                 "publicKeyPem": actor.public_key,
             },
         }
@@ -76,15 +80,19 @@ class ActorBlueprint(Blueprint):
             out["summary"] = actor.summary
 
         if self.manager.supports_list("followers"):
-            out["followers"] = url_for(".followers", actor_id=actor_id, _external=True)
+            out["followers"] = url_for(f"{self.name}.followers", actor_id=actor_id, _external=True)
 
         if self.manager.supports_list("following"):
-            out["following"] = url_for(".following", actor_id=actor_id, _external=True)
+            out["following"] = url_for(f"{self.name}.following", actor_id=actor_id, _external=True)
 
         if self.manager.supports_list("outbox"):
-            out["outbox"] = url_for(".outbox", actor_id=actor_id, _external=True)
+            out["outbox"] = url_for(f"{self.name}.outbox", actor_id=actor_id, _external=True)
 
-        print(out)
+        return out
+
+    def actor(self, actor_id):
+        actor = self.manager.find(actor_id)
+        out = self.format_actor_info(actor)
 
         return Response(
             response=json.dumps(out),

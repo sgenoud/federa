@@ -1,0 +1,36 @@
+{% extends "layout.html" %}
+{% block title %}Login{% endblock %}
+
+{% block additional_style %}
+<style>
+.login-form {
+    display: flex;
+    justify-content: center;
+
+    margin-top: 2em;
+
+    font-size: 1.2em;
+    min-width: 300px;
+}
+
+.login-form input {
+    margin-right: 1em;
+}
+
+</style>
+{% endblock %}
+
+{% block body %}
+<p>Welcome to Federa, the toolshed for the fediverse.</p>
+
+<p>Federa groups allow you to create communities akin to mailing lists for the
+fediverse.</p>
+
+<p>Tell us with which Mastodon instance you want to log in with</p>
+
+<form class="login-form" method="get" action="/login/mastodon">
+    <input name="instance_host" value="{{session.mastodon_instance_host}}" />
+    <button class="action-button">Login</button>
+</form>
+
+{% endblock %}

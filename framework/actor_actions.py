@@ -4,6 +4,7 @@ from multiprocessing.pool import ThreadPool
 from flask import url_for, current_app
 
 from framework.signatures import signed_request
+from framework.constants import AP_CONTEXT, PUBLIC_AUDIENCE
 from requests.exceptions import ConnectionError
 
 
@@ -44,10 +45,10 @@ def accept_object(source_actor, target_actor, obj, bp_name=""):
         source_actor,
         target_actor,
         {
-            "@context": "https://www.w3.org/ns/activitystreams",
+            "@context": AP_CONTEXT,
             "id": random_id(),
             "type": "Accept",
-            "actor": url_for("{bp_name}.actor", actor_id=source_actor.id, _external=True),
+            "actor": url_for(f"{bp_name}.actor", actor_id=source_actor.id, _external=True),
             "object": obj,
         },
     )
@@ -68,7 +69,7 @@ def announce_object(source_actor, target_actors, obj, announce_id=None, bp_name=
             key_id,
             target_actor,
             {
-                "@context": "https://www.w3.org/ns/activitystreams",
+                "@context": AP_CONTEXT,
                 "id": announce_id,
                 "type": "Announce",
                 "actor": actor_id,
@@ -77,7 +78,7 @@ def announce_object(source_actor, target_actors, obj, announce_id=None, bp_name=
         )
 
     with ThreadPool(20) as pool:
-        pool.map(_post_announce, target_actors)
+        pool.map(_post_announce, [a for a in target_actors if a != actor_id])
 
 
 def request_follow(source_actor, target_actor, bp_name=""):
@@ -85,7 +86,7 @@ def request_follow(source_actor, target_actor, bp_name=""):
         source_actor,
         target_actor,
         {
-            "@context": "https://www.w3.org/ns/activitystreams",
+            "@context": AP_CONTEXT,
             "id": random_id(),
             "type": "Follow",
             "actor": url_for(f"{bp_name}.actor", actor_id=source_actor.id, _external=True),
@@ -100,7 +101,7 @@ def request_unfollow(source_actor, target_actor, bp_name=""):
         source_actor,
         target_actor,
         {
-            "@context": "https://www.w3.org/ns/activitystreams",
+            "@context": AP_CONTEXT,
             "id": random_id(),
             "type": "Undo",
             "actor": url_for(f"{bp_name}.actor", actor_id=source_actor.id, _external=True),
@@ -108,3 +109,31 @@ def request_unfollow(source_actor, target_actor, bp_name=""):
         },
         bp_name=bp_name,
     )
+
+
+def update_object(source_actor, target_actors, obj, announce_id=None, bp_name=""):
+    if announce_id is None:
+        announce_id = random_id()
+
+    actor_id = url_for(f"{bp_name}.actor", actor_id=source_actor.id, _external=True)
+    key_id = url_for(
+        f"{bp_name}.actor", actor_id=source_actor.id, _external=True, _anchor="main-key"
+    )
+
+    def _post_update(target_actor):
+        detailed_post_to_inbox(
+            source_actor.private_key,
+            key_id,
+            target_actor,
+            {
+                "@context": AP_CONTEXT,
+                "id": announce_id,
+                "type": "Update",
+                "to": [PUBLIC_AUDIENCE],
+                "actor": actor_id,
+                "object": obj,
+            },
+        )
+
+    with ThreadPool(20) as pool:
+        pool.map(_post_update, [a for a in target_actors if a != actor_id])

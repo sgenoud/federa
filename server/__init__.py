@@ -1,14 +1,15 @@
 import datetime
-from uuid import uuid4
 
-from flask import Flask, redirect, url_for, jsonify, current_app
+from flask import Flask
 
 from flask_cors import CORS
 
-from framework.api.oauth import make_mastodon_blueprint, mastodon
+from framework.api.oauth import make_mastodon_blueprint
+from framework.helpers import populate_actor_info
 
 from server.config import Configuration
-from server.group import groupAPI
+from server.group import groupAPI, groupViews
+from server.site import site
 from server.db import db
 from server.backends import OAuthDynamoDbMemoryBackend
 
@@ -29,20 +30,12 @@ def create_app():
         scope="read write follow",
         instance_credentials_backend=OAuthDynamoDbMemoryBackend(),
     )
-
     app.register_blueprint(mastodon_bp, url_prefix="/login")
+
+    app.before_request(populate_actor_info)
+
+    app.register_blueprint(site, url_prefix="/")
     app.register_blueprint(groupAPI, url_prefix="/api")
-
-    @app.route("/")
-    def index():
-        if not mastodon.authorized:
-            return redirect(url_for("mastodon.login"))
-        resp = mastodon.get("/api/v1/accounts/verify_credentials")
-
-        return jsonify(resp.json())
-
-    @app.route("/random")
-    def text():
-        return f"https://{current_app.config.get('SERVER_NAME')}/{uuid4()}"
+    app.register_blueprint(groupViews, url_prefix="/group")
 
     return app

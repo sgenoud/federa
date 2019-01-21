@@ -2,7 +2,7 @@ from bloop.session import key_schema, index_projection, attribute_definitions
 
 from server.config import Configuration
 from server.db import db
-from server.model import GroupActivity
+from server.group.model import GroupActivity
 
 
 def run():
