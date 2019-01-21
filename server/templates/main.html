@@ -18,6 +18,13 @@
     padding-left: 1em;
     width: 100%;
 }
+
+.new-group-wrapper {
+    display: flex;
+    justify-content: center;
+    margin: 2em;
+}
+
 </style>
 {% endblock %}
 
@@ -26,17 +33,24 @@
 <p>Welcome <b>{{session.actor_handle}}</b>!</p>
 
 <p>This service allows you to create groups (or communities, forums) 
-for the fediverse. Messages adressed to the group will appear in the timeline
+for the fediverse.</p>
+
+<p>Messages adressed to the group will appear in the timeline
 of all its members – but you need to be a member of a group to post in it. 
 </p>
 
+<div class="new-group-wrapper">
+    <a class="action-button" href="{{url_for('group-views.index')}}">
+    New Group
+</a>
+</div>
 
 {% if groups %}
 <p>Here is the list of the groups you are a member of:</p>
 
 {% for (group, member) in groups %}
 <div class="group-info">
-    <a class="group-handle" href="{{url_for('group-views.group_info', group_id=group.id)}}">@{{group.id}}</a>
+    <a class="group-handle" href="{{url_for('group-views.group_info', group_id=group.id)}}">@{{group.id}}@group.federa.site</a>
     <span class="group-name">{{group.name}}</span>
     <div class="group-summary">
     {{group.summary}}
