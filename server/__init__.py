@@ -27,7 +27,7 @@ def create_app():
 
     mastodon_bp = make_mastodon_blueprint(
         app.config["SERVICE_NAME"],
-        scope="read write follow",
+        scope="read",
         instance_credentials_backend=OAuthDynamoDbMemoryBackend(),
     )
     app.register_blueprint(mastodon_bp, url_prefix="/login")
