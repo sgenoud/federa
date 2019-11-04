@@ -21,8 +21,9 @@ class OAuthDynamoDbMemoryBackend:
 
     def get(self, bp):
         cached = self.cache.get(bp.instance_host)
-        if cached is None:
+        if cached is not None:
             return cached
+
         return self._fill_cache(bp.instance_host)
 
     def set(self, bp, value):
@@ -30,9 +31,7 @@ class OAuthDynamoDbMemoryBackend:
         if not host:
             return
         self.cache[host] = value
-        print("saving key")
-        print(host)
-        db.save(
+        db.engine.save(
             OAuthKeys(host=host, client_id=value["client_id"], client_secret=value["client_secret"])
         )
 

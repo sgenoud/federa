@@ -64,6 +64,7 @@
 
     "prod_group": {
         "extends": "group",
+        "log_level": "INFO",
         "aws_environment_variables": {
             "SERVER_NAME": "group.federa.site"
         },

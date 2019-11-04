@@ -1,9 +1,9 @@
 from uuid import uuid4
-from multiprocessing.pool import ThreadPool
+from concurrent.futures import ThreadPoolExecutor
 
 from flask import url_for, current_app
 
-from framework.signatures import signed_request
+from framework.signatures import signed_request, signed_content
 from framework.constants import AP_CONTEXT, PUBLIC_AUDIENCE
 from requests.exceptions import ConnectionError
 
@@ -64,20 +64,22 @@ def announce_object(source_actor, target_actors, obj, announce_id=None, bp_name=
     )
 
     def _post_announce(target_actor):
-        detailed_post_to_inbox(
+        content = signed_content(
             source_actor.private_key,
             key_id,
-            target_actor,
             {
                 "@context": AP_CONTEXT,
                 "id": announce_id,
+                "to": "https://www.w3.org/ns/activitystreams#Public",
                 "type": "Announce",
                 "actor": actor_id,
                 "object": obj,
             },
         )
 
-    with ThreadPool(20) as pool:
+        detailed_post_to_inbox(source_actor.private_key, key_id, target_actor, content)
+
+    with ThreadPoolExecutor(max_workers=20) as pool:
         pool.map(_post_announce, [a for a in target_actors if a != actor_id])
 
 
@@ -135,5 +137,5 @@ def update_object(source_actor, target_actors, obj, announce_id=None, bp_name=""
             },
         )
 
-    with ThreadPool(20) as pool:
+    with ThreadPoolExecutor(max_workers=20) as pool:
         pool.map(_post_update, [a for a in target_actors if a != actor_id])

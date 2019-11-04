@@ -105,7 +105,7 @@ def create(group, create_activity):
 
     members.discard(actor)
     announce_id = str(uuid4())
-    announce_uri = (url_for(".announce_activity", announce_id=announce_id, _external=True),)
+    announce_uri = url_for(".announce_activity", announce_id=announce_id, _external=True)
     announce_object(group, members, activity_id, announce_uri)
 
     announce = GroupActivity(
