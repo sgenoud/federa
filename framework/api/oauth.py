@@ -1,6 +1,6 @@
 from flask_dance.consumer import OAuth2ConsumerBlueprint
 from flask_dance.consumer.requests import OAuth2Session
-from flask_dance.consumer.backend.session import SessionBackend
+from flask_dance.consumer.storage.session import SessionStorage
 from lazy import lazy
 from functools import partial
 from flask.globals import LocalProxy, _lookup_app_object
@@ -55,7 +55,7 @@ class MastodonConsumerBlueprint(OAuth2ConsumerBlueprint):
         self.client_name = client_name
 
         if instance_host_backend is None:
-            self.instance_host_backend = SessionBackend(key="{bp.name}_instance_host")
+            self.instance_host_backend = SessionStorage(key="{bp.name}_instance_host")
         elif callable(instance_host_backend):
             self.instance_host_backend = instance_host_backend()
         else:
@@ -191,10 +191,15 @@ def make_mastodon_blueprint(
     scope="read",
 ):
     if backend is None:
-        backend = SessionBackend(key="{bp.name}_{bp.instance_host}_oauth_token")
+        backend = SessionStorage(key="{bp.name}_{bp.instance_host}_oauth_token")
 
     mastodon_bp = MastodonConsumerBlueprint(
-        "mastodon", __name__, client_name=client_name, scope=scope, backend=backend
+        "mastodon",
+        __name__,
+        client_name=client_name,
+        scope=scope,
+        backend=backend,
+        instance_credentials_backend=instance_credentials_backend,
     )
 
     @mastodon_bp.before_app_request
