@@ -9,6 +9,8 @@
         "payload_compression": true,
         "payload_minimum_compression_size": 1024,
 
+        "log_level": "INFO",
+
         "route53_enabled": false,
         "certificate_arn": "arn:aws:acm:us-east-1:846687320916:certificate/58d52420-99e0-4cda-86f8-68a671fd9ea9"
     },
@@ -34,6 +36,7 @@
 
     "dev_group": {
         "extends": "group",
+        "log_level": "INFO",
         "aws_environment_variables": {
             "SERVER_NAME": "dev-group.federa.site",
             "TABLE_PREFIX": "dev"

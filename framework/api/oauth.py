@@ -1,11 +1,12 @@
 from flask_dance.consumer import OAuth2ConsumerBlueprint
 from flask_dance.consumer.requests import OAuth2Session
 from flask_dance.consumer.storage.session import SessionStorage
-from lazy import lazy
 from functools import partial
 from flask.globals import LocalProxy, _lookup_app_object
 from flask import request, url_for
+from werkzeug.utils import cached_property
 import requests
+from flask_dance.utils import invalidate_cached_property
 
 try:
     from flask import _app_ctx_stack as stack
@@ -114,12 +115,12 @@ class MastodonConsumerBlueprint(OAuth2ConsumerBlueprint):
         instance_config = self.credentials
         self.client_id = instance_config.get("client_id")
 
-        lazy.invalidate(self.session, "token")
+        invalidate_cached_property(self, "session")
 
     @instance_host.deleter
     def instance_host(self):
         self.instance_host_backend.delete(self)
-        lazy.invalidate(self.session, "token")
+        invalidate_cached_property(self, "session")
 
     @property
     def client_secret(self):
@@ -147,7 +148,7 @@ class MastodonConsumerBlueprint(OAuth2ConsumerBlueprint):
     def token_url(self, value):
         pass
 
-    @lazy
+    @cached_property
     def session(self):
         """
         This is a session between the consumer (your website) and the provider
@@ -198,7 +199,7 @@ def make_mastodon_blueprint(
         __name__,
         client_name=client_name,
         scope=scope,
-        backend=backend,
+        storage=backend,
         instance_credentials_backend=instance_credentials_backend,
     )
 
